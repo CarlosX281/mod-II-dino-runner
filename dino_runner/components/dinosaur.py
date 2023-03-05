@@ -7,6 +7,7 @@ from pygame.sprite import Sprite
 class Dinosaur(Sprite):
     Y_POST = 310
     X_POST = 80
+    jump_count = 10
 
     def __init__(self):
         self.image = RUNNING[0]
@@ -23,6 +24,8 @@ class Dinosaur(Sprite):
             self.jump()
         else:
             self.run()
+            self.Y_POST = 310
+            self.jump_count = 10
 
         self.step += 1
         if self.step == 10:
@@ -48,6 +51,14 @@ class Dinosaur(Sprite):
         self.image = JUMPING
         self.dino_rect = self.image.get_rect()
         self.dino_rect.x = self.X_POST
-        self.dino_rect.y = self.Y_POST - 150
+        self.dino_rect.y = self.Y_POST
+
+        if self.jump_count >= -10:
+            print(self.dino_rect.y, '=', self.dino_rect.y, '- (', self.jump_count, '*', abs(self.jump_count), ') * 0.5' )
+            self.Y_POST -= (self.jump_count * abs(self.jump_count)) * 0.5
+            self.jump_count -= 1
+        else:
+            self.jump_count = 10
+
 
 

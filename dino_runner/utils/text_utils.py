@@ -19,7 +19,6 @@ def get_deaths_count(deaths):
     text_rect.center = (90, 35)
     return text, text_rect
 
-
 def get_centered_message(message):
     font = pygame.font.Font(FONT_STYLE, 50)
     text = font.render(message, True, BLACK_COLOR)

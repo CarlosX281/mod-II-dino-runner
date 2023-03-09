@@ -1,8 +1,11 @@
+#cSpell:disable
+
 import pygame
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
-from dino_runner.utils.text_utils import get_centered_message, get_deaths_count, get_score_element
+from dino_runner.utils.text_utils import get_centered_message, get_score_element
 
 
 class Game:
@@ -14,14 +17,15 @@ class Game:
         pygame.display.set_icon(ICON)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
-        self.playing = False
+        self.playing = True
         self.game_speed = self.INITIAL_SPEED
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
+        self.power_up_manager = PowerUpManager()
         self.points = 0
-        self.deaths = 0
+        self.death_count = 0
 
     def show_score(self):
         self.points += 1
@@ -30,15 +34,14 @@ class Game:
         score, score_rect = get_score_element(self.points)
         self.screen.blit(score, score_rect)
     
-    def show_deaths(self):
-        if self.playing == False:
-            self.deaths += 1
-        deaths_count, deaths__count_rect = get_deaths_count(self.deaths)
-        self.screen.blit(deaths_count, deaths__count_rect)
 
     def show_menu(self):
         self.screen.fill((255, 255, 255))
-        text, text_rect = get_centered_message("Press any Key to Start!!!")
+        text, text_rect = get_centered_message(ICON)
+        self.screen.blit(text, text_rect)
+        text, text_rect = get_centered_message("Press any Key to Start!!!", y_offset=20)
+        self.screen.blit(text, text_rect)
+        text, text_rect = get_centered_message(f"Death Count: {self.death_count}", y_offset=40, font_size=20,)
         self.screen.blit(text, text_rect)
         pygame.display.update()
 
@@ -57,10 +60,12 @@ class Game:
             self.events()
             self.update()
             self.draw()
-        self.playing = False
-        self.points = 0
-        self.game_speed = self.INITIAL_SPEED
+        pygame.time.delay(2000)
+        self.death_count += 1
         self.obstacle_manager.remove_obstacles()
+        self.power_up_manager.remove_power_ups()
+        self.game_speed = self.INITIAL_SPEED
+        self.points = 0
 
     def events(self):
         for event in pygame.event.get():
@@ -71,6 +76,7 @@ class Game:
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self)
 
     def draw(self):
         self.clock.tick(FPS)
@@ -78,8 +84,8 @@ class Game:
         self.draw_background()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
+        self.power_up_manager.draw(self.screen)
         self.show_score()
-        self.show_deaths()
         pygame.display.update()
         pygame.display.flip()
 

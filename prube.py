@@ -1,0 +1,1 @@
+#how to do a class in python?

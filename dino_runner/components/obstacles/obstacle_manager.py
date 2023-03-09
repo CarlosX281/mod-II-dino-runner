@@ -1,10 +1,12 @@
+#cSpell:disable
+
 import random
 import pygame
 from dino_runner.components.obstacles.bird import Bird
 from dino_runner.components.obstacles.large_cactus import LargeCactus
 from dino_runner.components.obstacles.small_cactus import SmallCactus
 
-from dino_runner.utils.constants import BIRD, LARGE_CACTUS, SMALL_CACTUS
+from dino_runner.utils.constants import BIRD, HAMMER_TYPE, LARGE_CACTUS, SHIELD_TYPE, SMALL_CACTUS
 
 
 class ObstacleManager:
@@ -30,8 +32,14 @@ class ObstacleManager:
 
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
-            if game.player.dino_rect.colliderect(obstacle.rect):
-                pygame.time.delay(500)
+            if game.player.type == SHIELD_TYPE:
+                print("Shield Activated, no damage recived")
+            elif game.player.type == HAMMER_TYPE:
+                print("Hammer Activated, destroy the obstacles")
+                if game.player.dino_rect.colliderect(obstacle.rect):
+                    self.obstacles = []
+            elif game.player.dino_rect.colliderect(obstacle.rect):
+                pygame.time.dead()
                 game.playing = False
                 break
 
